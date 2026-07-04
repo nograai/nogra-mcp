@@ -1,0 +1,164 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.nogra.local/init-bundle-v1.schema.json",
+  "title": "Nogra Init Bundle v1",
+  "type": "object",
+  "required": [
+    "schema",
+    "releaseVersion",
+    "status",
+    "bundleId",
+    "version",
+    "initMode",
+    "generatedAt",
+    "workspaceId",
+    "workspaceName",
+    "writeMode",
+    "files",
+    "nextSteps"
+  ],
+  "properties": {
+    "schema": {
+      "const": "nogra.init.bundle.v1"
+    },
+    "releaseVersion": {
+      "type": "string",
+      "pattern": "^v[1-9][0-9]*\\.[0-9]+\\.[0-9]+$"
+    },
+    "status": {
+      "enum": ["ready", "error"]
+    },
+    "bundleId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "initMode": {
+      "enum": ["standalone", "plugin"],
+      "description": "How the init bundle should be applied. Standalone includes local Nogra commands and skills; plugin mode returns only workspace bootstrap files plus a root CLAUDE.md when missing because the plugin owns commands and skills."
+    },
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "workspaceId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "workspaceName": {
+      "type": "string",
+      "minLength": 1
+    },
+    "serverMode": {
+      "type": "string",
+      "description": "Advisory server mode identity. Older clients may ignore it."
+    },
+    "writeMode": {
+      "const": "client_writes_files"
+    },
+    "installPlan": {
+      "type": "object",
+      "description": "Optional phase plan for quieter client-side installation while preserving per-file writePolicy."
+    },
+    "postInstallMessage": {
+      "type": "string",
+      "description": "Optional chat-native landing message to show after init files are written."
+    },
+    "migration": {
+      "type": "object",
+      "description": "Advisory migration guidance for cleaning up obsolete pre-plugin Nogra workspace files after explicit user approval."
+    },
+    "optionalFeatures": {
+      "type": "array",
+      "description": "Optional features advertised by init but downloaded only after explicit user opt-in.",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "default", "downloadTool", "installPlan"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "title": {
+            "type": "string"
+          },
+          "default": {
+            "enum": ["off"]
+          },
+          "requires": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "installPrompt": {
+            "type": "string"
+          },
+          "startCommand": {
+            "type": "string"
+          },
+          "stateEndpoint": {
+            "type": "string"
+          },
+          "schema": {
+            "type": "string"
+          },
+          "downloadTool": {
+            "const": "optional_feature_bundle"
+          },
+          "installPlan": {
+            "type": "object",
+            "description": "File plan for the optional feature. Content is fetched separately through downloadTool."
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "files": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["path", "content", "mimeType", "writePolicy", "purpose"],
+        "properties": {
+          "path": {
+            "type": "string",
+            "pattern": "^(?!/)(?!.*(^|/)\\.\\.(/|$)).+"
+          },
+          "content": {
+            "type": "string"
+          },
+          "mimeType": {
+            "type": "string",
+            "minLength": 1
+          },
+          "contentEncoding": {
+            "type": "string",
+            "description": "Encoding of the content string. V0 uses utf-8 plain text carried as a JSON string."
+          },
+          "contentDelivery": {
+            "type": "string",
+            "description": "How the file content is delivered. V0 uses inline-json-string."
+          },
+          "writePolicy": {
+            "enum": ["create_if_missing", "create_or_update", "ask_before_overwrite"]
+          },
+          "purpose": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "nextSteps": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": false
+}

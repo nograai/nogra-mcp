@@ -1,0 +1,112 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.nogra.local/run-v1.schema.json",
+  "title": "Nogra Run v1",
+  "type": "object",
+  "required": [
+    "schema",
+    "releaseVersion",
+    "runId",
+    "workspaceId",
+    "briefId",
+    "status",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "schema": {
+      "const": "nogra.run.v1"
+    },
+    "releaseVersion": {
+      "type": "string",
+      "pattern": "^v[1-9][0-9]*\\.[0-9]+\\.[0-9]+$"
+    },
+    "runId": {
+      "type": "string",
+      "pattern": "^run-[A-Za-z0-9_.-]+$"
+    },
+    "workspaceId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "briefId": {
+      "type": "string",
+      "pattern": "^brief-[A-Za-z0-9_.-]+$"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "running",
+        "blocked",
+        "returned",
+        "accepted",
+        "failed",
+        "archived"
+      ]
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "owner": {
+      "type": "string"
+    },
+    "targetRole": {
+      "type": "string"
+    },
+    "targetModel": {
+      "type": "string",
+      "default": "anthropic:sonnet"
+    },
+    "startedAt": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "endedAt": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "summary": {
+      "type": "string"
+    },
+    "artifactUris": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "evidenceLevel": {
+      "type": "string",
+      "enum": [
+        "reported",
+        "edited",
+        "tested",
+        "verified"
+      ],
+      "default": "reported"
+    },
+    "redactions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Secret-pattern category labels detected in this record at write time."
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

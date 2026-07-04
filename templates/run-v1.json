@@ -1,0 +1,19 @@
+{
+  "schema": "nogra.run.v1",
+  "releaseVersion": "v1.0.0",
+  "runId": "run-slug",
+  "workspaceId": "local",
+  "briefId": "brief-slug",
+  "status": "queued",
+  "createdAt": "2026-05-04T00:00:00Z",
+  "updatedAt": "2026-05-04T00:00:00Z",
+  "owner": "",
+  "targetRole": "",
+  "targetModel": "anthropic:sonnet",
+  "startedAt": null,
+  "endedAt": null,
+  "summary": "",
+  "artifactUris": [],
+  "evidenceLevel": "reported",
+  "metadata": {}
+}

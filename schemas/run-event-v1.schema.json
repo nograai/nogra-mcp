@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.nogra.local/run-event-v1.schema.json",
+  "title": "Nogra RunEvent v1",
+  "type": "object",
+  "required": [
+    "schema",
+    "releaseVersion",
+    "eventId",
+    "workspaceId",
+    "eventType",
+    "message",
+    "createdAt"
+  ],
+  "properties": {
+    "schema": {
+      "const": "nogra.event.v1"
+    },
+    "releaseVersion": {
+      "type": "string",
+      "pattern": "^v[1-9][0-9]*\\.[0-9]+\\.[0-9]+$"
+    },
+    "eventId": {
+      "type": "string",
+      "pattern": "^event-[A-Za-z0-9_.-]+$"
+    },
+    "workspaceId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "eventType": {
+      "type": "string",
+      "enum": [
+        "note",
+        "status",
+        "artifact",
+        "return",
+        "decision",
+        "blocked",
+        "error"
+      ]
+    },
+    "message": {
+      "type": "string",
+      "minLength": 1
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "briefId": {
+      "type": "string"
+    },
+    "runId": {
+      "type": "string"
+    },
+    "artifactUris": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "evidenceLevel": {
+      "type": "string",
+      "enum": [
+        "reported",
+        "edited",
+        "tested",
+        "verified"
+      ],
+      "default": "reported"
+    },
+    "redactions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Secret-pattern category labels detected in this record at write time."
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

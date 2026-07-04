@@ -1,0 +1,109 @@
+name: Publish
+
+# Tag-triggered npm publish. Job 1 reuses build.yml via workflow_call (same
+# 5-platform matrix, not duplicated) so every published binary went through
+# the identical build -> assert -> smoke gate as ordinary CI. Job 2 collects
+# the artifacts, places them into the platform npm packages, verifies every
+# package.json version matches the tag (fail fast on mismatch — never publish
+# a version drift), then publishes platform packages before the main
+# selector package (so optionalDependencies resolve on first install).
+#
+# NOTE (see RELEASING.md "Upgrade path"): npm --provenance is intentionally
+# NOT used for v1 (would need `permissions: id-token: write` plus
+# `--provenance` on each publish call); this is a deliberately deferred
+# hardening step, not an oversight.
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+
+  publish:
+    name: publish npm packages
+    needs: build
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Download all build artifacts
+        uses: actions/download-artifact@v8
+        with:
+          path: artifacts
+
+      - name: Place platform binaries into packaging/npm/ (+ restore exec bit)
+        run: |
+          set -euo pipefail
+          # upload-artifact/download-artifact strip the executable bit on
+          # unix binaries; restore it explicitly after copying. win32 gets
+          # nogra-mcp.exe (no exec bit needed on Windows).
+          copy_one() {
+            key="$1"; npm_dir="$2"; bin_name="$3"
+            src="artifacts/nogra-mcp-${key}/${bin_name}"
+            dest="packaging/npm/${npm_dir}/${bin_name}"
+            if [ ! -f "$src" ]; then
+              echo "ERROR: expected artifact binary not found: $src" >&2
+              exit 1
+            fi
+            cp "$src" "$dest"
+            if [ "$bin_name" != "nogra-mcp.exe" ]; then
+              chmod +x "$dest"
+            fi
+            echo "placed: $dest"
+          }
+          copy_one darwin-arm64 mcp-darwin-arm64 nogra-mcp
+          copy_one darwin-x64   mcp-darwin-x64   nogra-mcp
+          copy_one linux-x64    mcp-linux-x64    nogra-mcp
+          copy_one linux-arm64  mcp-linux-arm64  nogra-mcp
+          copy_one win32-x64    mcp-win32-x64    nogra-mcp.exe
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Verify every package.json version matches the tag
+        run: |
+          set -euo pipefail
+          TAG="${GITHUB_REF#refs/tags/}"
+          EXPECTED="${TAG#v}"
+          echo "tag=${TAG} expected-version=${EXPECTED}"
+          fail=0
+          for pkg in mcp mcp-darwin-arm64 mcp-darwin-x64 mcp-linux-x64 mcp-linux-arm64 mcp-win32-x64; do
+            got="$(node -p "require('./packaging/npm/${pkg}/package.json').version")"
+            if [ "$got" != "$EXPECTED" ]; then
+              echo "VERSION MISMATCH: packaging/npm/${pkg}/package.json version=${got}, tag expects ${EXPECTED}" >&2
+              fail=1
+            else
+              echo "ok: packaging/npm/${pkg} version=${got}"
+            fi
+          done
+          if [ "$fail" -ne 0 ]; then
+            echo "Aborting publish: version/tag mismatch above." >&2
+            exit 1
+          fi
+
+      # Platform packages first: publishing the main @nograai/mcp selector
+      # last means its optionalDependencies already resolve on npm's
+      # registry the moment a consumer's `npm install` sees it.
+      - name: Publish platform packages
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          set -euo pipefail
+          for pkg in mcp-darwin-arm64 mcp-darwin-x64 mcp-linux-x64 mcp-linux-arm64 mcp-win32-x64; do
+            echo "publishing @nograai/${pkg}"
+            npm publish "packaging/npm/${pkg}" --access public
+          done
+
+      - name: Publish main package (@nograai/mcp)
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish packaging/npm/mcp --access public

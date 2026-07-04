@@ -1,0 +1,221 @@
+{
+  "schema": "nogra.init.manifest.v1",
+  "files": [
+    {
+      "source": "init-bundle/files/.nogra/config.json",
+      "path": ".nogra/config.json",
+      "mimeType": "application/json",
+      "writePolicy": "create_or_update",
+      "purpose": "Workspace-level Nogra configuration."
+    },
+    {
+      "source": "init-bundle/files/gitignore-ds-store",
+      "path": ".nogra/.gitignore",
+      "mimeType": "text/plain",
+      "writePolicy": "create_if_missing",
+      "purpose": "Ignores local Finder metadata inside the Nogra trust-source directory."
+    },
+    {
+      "source": "init-bundle/files/.nogra/SESSION-CHECKPOINT.md",
+      "path": ".nogra/SESSION-CHECKPOINT.md",
+      "mimeType": "text/markdown",
+      "writePolicy": "create_if_missing",
+      "purpose": "Compact resume point for future Nogra sessions."
+    },
+    {
+      "source": "init-bundle/files/.nogra/CURRENT-TASKS.md",
+      "path": ".nogra/CURRENT-TASKS.md",
+      "mimeType": "text/markdown",
+      "writePolicy": "create_if_missing",
+      "purpose": "Current and parked Nogra work for this workspace."
+    },
+    {
+      "source": "init-bundle/files/.nogra/DECISIONS.md",
+      "path": ".nogra/DECISIONS.md",
+      "mimeType": "text/markdown",
+      "writePolicy": "create_if_missing",
+      "purpose": "Durable decisions that should survive sessions."
+    },
+    {
+      "source": "init-bundle/files/.nogra/PROJECT-STRUCTURE.md",
+      "path": ".nogra/PROJECT-STRUCTURE.md",
+      "mimeType": "text/markdown",
+      "writePolicy": "create_if_missing",
+      "purpose": "Project-specific paths, boundaries and source-of-truth notes."
+    },
+    {
+      "source": "defaults/.nogra/providers.md",
+      "path": ".nogra/providers.md",
+      "mimeType": "text/markdown",
+      "writePolicy": "create_or_update",
+      "purpose": "Visible model/provider labels for customer-owned execution.",
+      "modes": ["standalone"]
+    },
+    {
+      "source": "defaults/.nogra/presets/neutral.md",
+      "path": ".nogra/presets/neutral.md",
+      "mimeType": "text/markdown",
+      "writePolicy": "create_or_update",
+      "purpose": "Neutral consult preset.",
+      "modes": ["standalone"]
+    },
+    {
+      "source": "defaults/.nogra/presets/fresh-eyes.md",
+      "path": ".nogra/presets/fresh-eyes.md",
+      "mimeType": "text/markdown",
+      "writePolicy": "create_or_update",
+      "purpose": "Fresh-eyes consult preset.",
+      "modes": ["standalone"]
+    },
+    {
+      "source": "defaults/.nogra/presets/critique.md",
+      "path": ".nogra/presets/critique.md",
+      "mimeType": "text/markdown",
+      "writePolicy": "create_or_update",
+      "purpose": "Critique consult preset.",
+      "modes": ["standalone"]
+    },
+    {
+      "source": "defaults/.nogra/presets/ideation.md",
+      "path": ".nogra/presets/ideation.md",
+      "mimeType": "text/markdown",
+      "writePolicy": "create_or_update",
+      "purpose": "Ideation consult preset.",
+      "modes": ["standalone"]
+    },
+    {
+      "source": "defaults/.nogra/provider-handoff-templates/provider-handoff-default.md",
+      "path": ".nogra/provider-handoff-templates/provider-handoff-default.md",
+      "mimeType": "text/markdown",
+      "writePolicy": "create_or_update",
+      "purpose": "Default consult render template.",
+      "modes": ["standalone"]
+    },
+    {
+      "source": "init-bundle/files/.gitkeep",
+      "path": ".nogra/briefs/.gitkeep",
+      "mimeType": "text/plain",
+      "writePolicy": "create_if_missing",
+      "purpose": "Keeps the local Nogra brief directory present."
+    },
+    {
+      "source": "init-bundle/files/.gitkeep",
+      "path": ".nogra/events/.gitkeep",
+      "mimeType": "text/plain",
+      "writePolicy": "create_if_missing",
+      "purpose": "Keeps the local Nogra event directory present."
+    },
+    {
+      "source": "init-bundle/files/.gitkeep",
+      "path": ".nogra/runs/.gitkeep",
+      "mimeType": "text/plain",
+      "writePolicy": "create_if_missing",
+      "purpose": "Keeps the local Nogra run directory present."
+    },
+    {
+      "source": "init-bundle/files/.gitkeep",
+      "path": ".nogra/receipts/.gitkeep",
+      "mimeType": "text/plain",
+      "writePolicy": "create_if_missing",
+      "purpose": "Keeps the local Nogra receipt directory present."
+    },
+    {
+      "source": "init-bundle/files/.gitkeep",
+      "path": ".nogra/transport/.gitkeep",
+      "mimeType": "text/plain",
+      "writePolicy": "create_if_missing",
+      "purpose": "Keeps the local Nogra transport directory present."
+    },
+    {
+      "source": "init-bundle/files/CLAUDE.md",
+      "path": "CLAUDE.md",
+      "mimeType": "text/markdown",
+      "writePolicy": "create_if_missing",
+      "purpose": "Public-safe Nogra workspace orientation. Plugin mode creates this only when missing and never overwrites an existing project CLAUDE.md.",
+      "modes": ["standalone", "plugin"]
+    },
+    {
+      "source": "init-bundle/files/.claude/commands/nogra.md",
+      "path": ".claude/commands/nogra.md",
+      "mimeType": "text/markdown",
+      "writePolicy": "ask_before_overwrite",
+      "purpose": "Local Claude Code command for Nogra workspace actions.",
+      "modes": ["standalone"]
+    },
+    {
+      "source": "init-bundle/files/.claude/skills/nogra-brief-writing/SKILL.md",
+      "path": ".claude/skills/nogra-brief-writing/SKILL.md",
+      "mimeType": "text/markdown",
+      "writePolicy": "ask_before_overwrite",
+      "purpose": "Skill for writing Nogra briefs.",
+      "modes": ["standalone"]
+    },
+    {
+      "source": "init-bundle/files/.claude/skills/nogra-dispatch-flow/SKILL.md",
+      "path": ".claude/skills/nogra-dispatch-flow/SKILL.md",
+      "mimeType": "text/markdown",
+      "writePolicy": "ask_before_overwrite",
+      "purpose": "Skill for dispatching through Nogra.",
+      "modes": ["standalone"]
+    },
+    {
+      "source": "init-bundle/files/.claude/skills/nogra-completion-evidence/SKILL.md",
+      "path": ".claude/skills/nogra-completion-evidence/SKILL.md",
+      "mimeType": "text/markdown",
+      "writePolicy": "ask_before_overwrite",
+      "purpose": "Skill for completion evidence.",
+      "modes": ["standalone"]
+    },
+    {
+      "source": "init-bundle/files/.claude/skills/nogra-pinboard-customize/SKILL.md",
+      "path": ".claude/skills/nogra-pinboard-customize/SKILL.md",
+      "mimeType": "text/markdown",
+      "writePolicy": "ask_before_overwrite",
+      "purpose": "Skill for optional local pinboard renderer customization.",
+      "modes": ["standalone"]
+    }
+  ],
+  "optionalFeatures": [
+    {
+      "id": "local-pinboard-renderer",
+      "title": "Local pinboard renderer",
+      "default": "off",
+      "requires": "Node.js available on PATH",
+      "description": "Optional local viewer that serves nogra/pinboard.html with live data from .nogra/ records.",
+      "installPrompt": "Do you want the optional local pinboard renderer? It is nice to have, requires Node.js, and starts only when you run it.",
+      "startCommand": "node nogra/pinboard/server.mjs --port 7777",
+      "stateEndpoint": "/api/state",
+      "schema": "nogra.pinboard.state.v1",
+      "files": [
+        {
+          "source": "optional-features/local-pinboard-renderer/files/nogra-gitignore",
+          "path": "nogra/.gitignore",
+          "mimeType": "text/plain",
+          "writePolicy": "create_if_missing",
+          "purpose": "Ignores local Finder metadata inside the optional visible Nogra folder."
+        },
+        {
+          "source": "optional-features/local-pinboard-renderer/files/nogra/pinboard.html",
+          "path": "nogra/pinboard.html",
+          "mimeType": "text/html",
+          "writePolicy": "ask_before_overwrite",
+          "purpose": "Optional local pinboard visual surface."
+        },
+        {
+          "source": "optional-features/local-pinboard-renderer/files/nogra/pinboard/server.mjs",
+          "path": "nogra/pinboard/server.mjs",
+          "mimeType": "text/javascript",
+          "writePolicy": "ask_before_overwrite",
+          "purpose": "Optional no-dependency local pinboard renderer."
+        },
+        {
+          "source": "optional-features/local-pinboard-renderer/files/nogra/pinboard/README.md",
+          "path": "nogra/pinboard/README.md",
+          "mimeType": "text/markdown",
+          "writePolicy": "ask_before_overwrite",
+          "purpose": "Start, stop and troubleshooting notes for the optional local pinboard renderer."
+        }
+      ]
+    }
+  ]
+}

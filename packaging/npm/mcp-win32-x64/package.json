@@ -1,0 +1,16 @@
+{
+  "name": "@nograai/mcp-win32-x64",
+  "version": "1.0.0",
+  "description": "Nogra MCP server — native binary for Windows x64. Installed automatically as an optionalDependency of @nograai/mcp.",
+  "license": "SEE LICENSE IN README.md",
+  "os": [
+    "win32"
+  ],
+  "cpu": [
+    "x64"
+  ],
+  "files": [
+    "nogra-mcp.exe"
+  ],
+  "preferUnplugged": true
+}

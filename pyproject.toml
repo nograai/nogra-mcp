@@ -1,0 +1,13 @@
+[project]
+name = "nogra-mcp"
+version = "1.0.0"
+description = "Canonical Nogra MCP server."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "mcp[cli]>=1.8.0",
+  "pydantic>=2.0.0",
+]
+
+[project.scripts]
+nogra-mcp = "nogra_mcp.server:main"

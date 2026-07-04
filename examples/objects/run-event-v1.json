@@ -1,0 +1,18 @@
+{
+  "schema": "nogra.event.v1",
+  "releaseVersion": "v1.0.0",
+  "eventId": "event-demo-contract-check",
+  "workspaceId": "local",
+  "eventType": "status",
+  "message": "Public contract resources were inspected.",
+  "createdAt": "2026-05-04T00:00:00Z",
+  "briefId": "brief-demo-contract-check",
+  "runId": "run-demo-contract-check",
+  "artifactUris": [
+    "nogra://public/schemas/run-event-v1"
+  ],
+  "evidenceLevel": "reported",
+  "metadata": {
+    "example": true
+  }
+}

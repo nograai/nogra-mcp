@@ -1,0 +1,868 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Nogra Pinboard</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f5f6f7;
+        --surface: #ffffff;
+        --surface-soft: #eef0f2;
+        --text: #1f2328;
+        --muted: #5f6670;
+        --line: #d9dde3;
+        --green: #1f6b4f;
+        --blue: #285f9f;
+        --amber: #7a5a18;
+        --red: #a23b35;
+        --ink: #22272e;
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        line-height: 1.5;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        min-width: 320px;
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        letter-spacing: 0;
+      }
+
+      .shell {
+        width: min(100% - 32px, 1180px);
+        margin: 0 auto;
+        padding: 28px 0 40px;
+      }
+
+      header {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 20px;
+        align-items: end;
+        padding-bottom: 18px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+
+      h1 {
+        font-size: 32px;
+        line-height: 1.05;
+        font-weight: 720;
+      }
+
+      h2 {
+        font-size: 15px;
+        line-height: 1.2;
+        font-weight: 680;
+      }
+
+      h3 {
+        font-size: 13px;
+        line-height: 1.2;
+        font-weight: 680;
+      }
+
+      .muted {
+        color: var(--muted);
+      }
+
+      .workspace-meta {
+        display: grid;
+        gap: 3px;
+        justify-items: end;
+        color: var(--muted);
+        font-size: 13px;
+        text-align: right;
+      }
+
+      .metrics {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+        margin: 18px 0;
+      }
+
+      .metric,
+      .panel,
+      .run,
+      .agent-node,
+      .event {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+      }
+
+      .metric {
+        min-height: 82px;
+        padding: 14px;
+        display: grid;
+        align-content: space-between;
+      }
+
+      .metric strong {
+        font-size: 24px;
+        line-height: 1;
+      }
+
+      .metric span {
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.25fr) minmax(320px, 0.75fr);
+        gap: 14px;
+      }
+
+      .stack {
+        display: grid;
+        gap: 14px;
+      }
+
+      .panel {
+        min-width: 0;
+        overflow: hidden;
+      }
+
+      .panel-head {
+        min-height: 48px;
+        padding: 14px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .panel-body {
+        padding: 16px;
+      }
+
+      .brief-title {
+        margin-bottom: 8px;
+        font-size: 22px;
+        line-height: 1.16;
+        font-weight: 720;
+      }
+
+      .brief-intent {
+        margin-bottom: 16px;
+        color: var(--muted);
+        font-size: 15px;
+      }
+
+      .two-col {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+      }
+
+      .list {
+        display: grid;
+        gap: 8px;
+        margin: 10px 0 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .list li {
+        min-width: 0;
+        padding: 9px 10px;
+        background: var(--surface-soft);
+        border-radius: 6px;
+        color: var(--ink);
+        font-size: 13px;
+        overflow-wrap: anywhere;
+      }
+
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 10px;
+      }
+
+      .chip,
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        min-height: 24px;
+        max-width: 100%;
+        padding: 3px 8px;
+        border-radius: 999px;
+        font-size: 12px;
+        line-height: 1.2;
+        font-weight: 620;
+        overflow-wrap: anywhere;
+      }
+
+      .chip {
+        background: var(--surface-soft);
+        color: var(--ink);
+      }
+
+      .badge {
+        background: #e8efe9;
+        color: var(--green);
+      }
+
+      .badge.running,
+      .badge.queued {
+        background: #e7eef8;
+        color: var(--blue);
+      }
+
+      .badge.partial,
+      .badge.afvigelse,
+      .badge.beslutning_kraeves {
+        background: #f6ecd9;
+        color: var(--amber);
+      }
+
+      .badge.blocked,
+      .badge.failed {
+        background: #f5e4e2;
+        color: var(--red);
+      }
+
+      .runs {
+        display: grid;
+        gap: 10px;
+      }
+
+      .run {
+        padding: 12px;
+        display: grid;
+        gap: 8px;
+      }
+
+      .run-top {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        align-items: start;
+      }
+
+      .run-id {
+        min-width: 0;
+        font-family:
+          ui-monospace,
+          SFMono-Regular,
+          Menlo,
+          Consolas,
+          monospace;
+        font-size: 12px;
+        color: var(--muted);
+        overflow-wrap: anywhere;
+      }
+
+      .run-summary {
+        color: var(--ink);
+        font-size: 13px;
+      }
+
+      .agent-map {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .agent-node {
+        min-height: 118px;
+        padding: 12px;
+        display: grid;
+        align-content: space-between;
+      }
+
+      .agent-role {
+        color: var(--muted);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      .agent-name {
+        margin-top: 5px;
+        font-size: 16px;
+        font-weight: 700;
+      }
+
+      .agent-scope {
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .events {
+        display: grid;
+        gap: 8px;
+      }
+
+      .event {
+        padding: 10px 12px;
+        display: grid;
+        gap: 4px;
+      }
+
+      .event time {
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .event strong {
+        font-size: 13px;
+      }
+
+      .event p {
+        color: var(--ink);
+        font-size: 13px;
+      }
+
+      .empty {
+        min-height: 118px;
+        display: grid;
+        place-items: center;
+        padding: 22px;
+        color: var(--muted);
+        text-align: center;
+        border: 1px dashed var(--line);
+        border-radius: 8px;
+      }
+
+      footer {
+        margin-top: 18px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      @media (max-width: 860px) {
+        header,
+        .grid,
+        .two-col {
+          grid-template-columns: 1fr;
+        }
+
+        .workspace-meta {
+          justify-items: start;
+          text-align: left;
+        }
+
+        .metrics,
+        .agent-map {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 560px) {
+        .shell {
+          width: min(100% - 20px, 1180px);
+          padding-top: 18px;
+        }
+
+        .metrics,
+        .agent-map {
+          grid-template-columns: 1fr;
+        }
+
+        h1 {
+          font-size: 28px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <script id="nogra-pinboard-data" type="application/json">
+{
+  "schema": "nogra.pinboard.placeholder.v1",
+  "updatedAt": "{{generatedAt}}",
+  "source": "placeholder",
+  "sequence": 0,
+  "workspace": {
+    "name": "{{workspaceName}}",
+    "id": "{{workspaceId}}",
+    "version": "{{version}}",
+    "updatedAt": "{{generatedAt}}"
+  },
+  "briefs": [],
+  "latestBrief": null,
+  "runs": [],
+  "events": [],
+  "agents": [],
+  "evidence": {
+    "runId": "",
+    "filesChanged": [],
+    "commandsRun": [],
+    "acceptance": []
+  }
+}
+    </script>
+
+    <main class="shell">
+      <header>
+        <div>
+          <h1>Nogra Pinboard</h1>
+          <p class="muted" id="workspace-name">Workspace</p>
+        </div>
+        <div class="workspace-meta">
+          <span id="workspace-id">local</span>
+          <span id="workspace-updated">Renderer not active</span>
+        </div>
+      </header>
+
+      <section class="metrics" aria-label="Workspace metrics">
+        <div class="metric">
+          <span>Briefs</span>
+          <strong id="metric-briefs">0</strong>
+        </div>
+        <div class="metric">
+          <span>Active runs</span>
+          <strong id="metric-active-runs">0</strong>
+        </div>
+        <div class="metric">
+          <span>Last verification</span>
+          <strong id="metric-verification">None</strong>
+        </div>
+        <div class="metric">
+          <span>Events</span>
+          <strong id="metric-events">0</strong>
+        </div>
+      </section>
+
+      <section class="grid">
+        <div class="stack">
+          <article class="panel">
+            <div class="panel-head">
+              <h2>Latest Brief</h2>
+              <span class="badge" id="brief-status">No brief</span>
+            </div>
+            <div class="panel-body" id="latest-brief">
+              <div class="empty">Local pinboard renderer is not active yet. Nogra records live in .nogra/.</div>
+            </div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-head">
+              <h2>Runs</h2>
+              <span class="muted" id="runs-count">0 total</span>
+            </div>
+            <div class="panel-body">
+              <div class="runs" id="runs-list">
+                <div class="empty">No runs recorded yet.</div>
+              </div>
+            </div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-head">
+              <h2>Agent Structure</h2>
+              <span class="muted">Manager - Execute - Verify</span>
+            </div>
+            <div class="panel-body">
+              <div class="agent-map" id="agent-map"></div>
+            </div>
+          </article>
+        </div>
+
+        <div class="stack">
+          <article class="panel">
+            <div class="panel-head">
+              <h2>Evidence</h2>
+              <span class="muted" id="evidence-run">No run</span>
+            </div>
+            <div class="panel-body">
+              <div class="two-col">
+                <section>
+                  <h3>Files Changed</h3>
+                  <ul class="list" id="files-changed"></ul>
+                </section>
+                <section>
+                  <h3>Checks</h3>
+                  <ul class="list" id="commands-run"></ul>
+                </section>
+              </div>
+              <section style="margin-top: 16px">
+                <h3>Acceptance</h3>
+                <ul class="list" id="acceptance-list"></ul>
+              </section>
+            </div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-head">
+              <h2>Activity</h2>
+              <span class="muted" id="events-count">0 events</span>
+            </div>
+            <div class="panel-body">
+              <div class="events" id="events-list">
+                <div class="empty">No events recorded yet.</div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <footer>
+        Renderer: <span id="contract-version">not active</span>
+        <span aria-hidden="true"> · </span>
+        Trust source: <span id="data-source">.nogra/ records</span>
+      </footer>
+    </main>
+
+    <script>
+      const fallbackData = {
+        schema: "nogra.pinboard.placeholder.v1",
+        updatedAt: "{{generatedAt}}",
+        source: "placeholder",
+        sequence: 0,
+        workspace: {
+          name: "{{workspaceName}}",
+          id: "{{workspaceId}}",
+          version: "{{version}}",
+          updatedAt: "{{generatedAt}}"
+        },
+        briefs: [],
+        latestBrief: null,
+        runs: [],
+        events: [],
+        agents: [],
+        evidence: {
+          runId: "",
+          filesChanged: [],
+          commandsRun: [],
+          acceptance: []
+        }
+      };
+
+      function readData() {
+        const node = document.getElementById("nogra-pinboard-data");
+        if (!node) return fallbackData;
+        try {
+          const parsed = JSON.parse(node.textContent);
+          return mergeData(parsed);
+        } catch (error) {
+          return fallbackData;
+        }
+      }
+
+      function mergeData(next) {
+        const parsed = next && typeof next === "object" ? next : {};
+        return {
+          ...fallbackData,
+          ...parsed,
+          workspace: { ...fallbackData.workspace, ...(parsed.workspace || {}) },
+          evidence: { ...fallbackData.evidence, ...(parsed.evidence || {}) }
+        };
+      }
+
+      let data = readData();
+      let dataSource = ".nogra/ records";
+      const rendererActive = () => clean(data.source) === "local-renderer";
+
+      const asArray = (value) => Array.isArray(value) ? value : value ? [value] : [];
+      const text = (selector, value) => {
+        const node = document.querySelector(selector);
+        if (node) node.textContent = value;
+      };
+      const clean = (value, fallback = "") => {
+        if (value === null || value === undefined) return fallback;
+        const out = String(value).trim();
+        if (!out || out.includes("{{")) return fallback;
+        return out;
+      };
+      const formatTime = (value) => {
+        const raw = clean(value);
+        if (!raw || raw.includes("{{")) return "Not refreshed yet";
+        const date = new Date(raw);
+        if (Number.isNaN(date.getTime())) return raw;
+        return date.toLocaleString([], {
+          year: "numeric",
+          month: "short",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit"
+        });
+      };
+      const statusClass = (value) => clean(value, "none").toLowerCase().replace(/[^a-z0-9_ -]/g, "").replace(/\s+/g, "_");
+
+      function setBadge(selector, value) {
+        const node = document.querySelector(selector);
+        if (!node) return;
+        const status = clean(value, "None");
+        node.textContent = status;
+        node.className = `badge ${statusClass(status)}`;
+      }
+
+      function renderSimpleList(selector, items, emptyText) {
+        const node = document.querySelector(selector);
+        if (!node) return;
+        node.replaceChildren();
+        const values = asArray(items).filter((item) => clean(typeof item === "object" ? item.label || item.command || item.path || item.criterion || item.status : item));
+        if (!values.length) {
+          const li = document.createElement("li");
+          li.textContent = emptyText;
+          node.append(li);
+          return;
+        }
+        for (const item of values.slice(0, 8)) {
+          const li = document.createElement("li");
+          if (typeof item === "object") {
+            const primary = clean(item.path || item.command || item.criterion || item.label || item.status, "Item");
+            const secondary = clean(item.status || item.result || item.note || "");
+            li.textContent = secondary && secondary !== primary ? `${primary} - ${secondary}` : primary;
+          } else {
+            li.textContent = clean(item);
+          }
+          node.append(li);
+        }
+      }
+
+      function renderChips(container, items) {
+        container.replaceChildren();
+        for (const item of asArray(items).slice(0, 12)) {
+          const chip = document.createElement("span");
+          chip.className = "chip";
+          chip.textContent = clean(item, "item");
+          container.append(chip);
+        }
+      }
+
+      function renderLatestBrief() {
+        const panel = document.getElementById("latest-brief");
+        const brief = data.latestBrief || asArray(data.briefs).at(-1);
+        if (!panel) return;
+        panel.replaceChildren();
+        if (!brief) {
+          const empty = document.createElement("div");
+          empty.className = "empty";
+          empty.textContent = rendererActive()
+            ? "No brief recorded yet."
+            : "Local pinboard renderer is not active yet. Read .nogra/ records for current briefs.";
+          panel.append(empty);
+          setBadge("#brief-status", "No brief");
+          return;
+        }
+
+        setBadge("#brief-status", clean(brief.status || brief.phase || "draft"));
+
+        const title = document.createElement("h2");
+        title.className = "brief-title";
+        title.textContent = clean(brief.title, "Untitled brief");
+
+        const intent = document.createElement("p");
+        intent.className = "brief-intent";
+        intent.textContent = clean(brief.intent || brief.summary, "No intent recorded.");
+
+        const columns = document.createElement("div");
+        columns.className = "two-col";
+
+        const scopeSection = document.createElement("section");
+        const scopeTitle = document.createElement("h3");
+        scopeTitle.textContent = "Scope";
+        const chips = document.createElement("div");
+        chips.className = "chips";
+        renderChips(chips, brief.files || brief.scopeFiles || brief.scope || []);
+        scopeSection.append(scopeTitle, chips);
+
+        const criteriaSection = document.createElement("section");
+        const criteriaTitle = document.createElement("h3");
+        criteriaTitle.textContent = "Success Criteria";
+        const criteriaList = document.createElement("ul");
+        criteriaList.className = "list";
+        criteriaSection.append(criteriaTitle, criteriaList);
+
+        columns.append(scopeSection, criteriaSection);
+        panel.append(title, intent, columns);
+        renderSimpleListFromNode(criteriaList, brief.successCriteria || brief.acceptance || [], "No success criteria recorded.");
+      }
+
+      function renderSimpleListFromNode(node, items, emptyText) {
+        node.replaceChildren();
+        const values = asArray(items);
+        if (!values.length) {
+          const li = document.createElement("li");
+          li.textContent = emptyText;
+          node.append(li);
+          return;
+        }
+        for (const item of values.slice(0, 8)) {
+          const li = document.createElement("li");
+          li.textContent = typeof item === "object"
+            ? clean(item.criterion || item.label || item.status, "Criterion")
+            : clean(item);
+          node.append(li);
+        }
+      }
+
+      function renderRuns() {
+        const runs = asArray(data.runs).slice().reverse();
+        const node = document.getElementById("runs-list");
+        if (!node) return;
+        node.replaceChildren();
+        text("#runs-count", `${runs.length} total`);
+        if (!runs.length) {
+          const empty = document.createElement("div");
+          empty.className = "empty";
+          empty.textContent = "No runs recorded yet.";
+          node.append(empty);
+          return;
+        }
+        for (const run of runs.slice(0, 6)) {
+          const item = document.createElement("article");
+          item.className = "run";
+
+          const top = document.createElement("div");
+          top.className = "run-top";
+          const id = document.createElement("div");
+          id.className = "run-id";
+          id.textContent = clean(run.runId || run.id, "run");
+          const badge = document.createElement("span");
+          const status = clean(run.verification || run.verdict || run.status || run.phase, "unknown");
+          badge.className = `badge ${statusClass(status)}`;
+          badge.textContent = status;
+          top.append(id, badge);
+
+          const summary = document.createElement("p");
+          summary.className = "run-summary";
+          summary.textContent = clean(run.summary || run.title || run.notes, "No summary recorded.");
+
+          const meta = document.createElement("p");
+          meta.className = "muted";
+          meta.textContent = formatTime(run.updatedAt || run.createdAt || run.generatedAt);
+
+          item.append(top, summary, meta);
+          node.append(item);
+        }
+      }
+
+      function renderAgents() {
+        const defaults = [
+          { role: "Manager", name: "Claude", status: "ready", scope: "Brief, dispatch, verification" },
+          { role: "Executor", name: "Customer-side agent", status: "waiting", scope: "Approved scope only" },
+          { role: "Verifier", name: "Nogra", status: "ready", scope: "Evidence against brief" }
+        ];
+        const agents = asArray(data.agents).length ? asArray(data.agents) : defaults;
+        const node = document.getElementById("agent-map");
+        if (!node) return;
+        node.replaceChildren();
+        for (const agent of agents.slice(0, 6)) {
+          const card = document.createElement("section");
+          card.className = "agent-node";
+          const top = document.createElement("div");
+          const role = document.createElement("div");
+          role.className = "agent-role";
+          role.textContent = clean(agent.role, "Role");
+          const name = document.createElement("div");
+          name.className = "agent-name";
+          name.textContent = clean(agent.name || agent.id, "Agent");
+          top.append(role, name);
+          const bottom = document.createElement("div");
+          const badge = document.createElement("span");
+          const status = clean(agent.status, "ready");
+          badge.className = `badge ${statusClass(status)}`;
+          badge.textContent = status;
+          const scope = document.createElement("p");
+          scope.className = "agent-scope";
+          scope.textContent = clean(agent.scope || agent.notes, "");
+          bottom.append(badge, scope);
+          card.append(top, bottom);
+          node.append(card);
+        }
+      }
+
+      function renderEvidence() {
+        const latestRun = asArray(data.runs).at(-1) || {};
+        const evidence = {
+          ...data.evidence,
+          ...(latestRun.evidence || {})
+        };
+        const runId = clean(evidence.runId || latestRun.runId || latestRun.id, "No run");
+        text("#evidence-run", runId);
+        renderSimpleList("#files-changed", evidence.filesChanged || latestRun.filesChanged || [], "No changed files recorded.");
+        renderSimpleList("#commands-run", evidence.commandsRun || latestRun.commandsRun || [], "No checks recorded.");
+        renderSimpleList("#acceptance-list", evidence.acceptance || latestRun.acceptance || [], "No acceptance evidence recorded.");
+      }
+
+      function renderEvents() {
+        const events = asArray(data.events).slice().reverse();
+        const node = document.getElementById("events-list");
+        if (!node) return;
+        node.replaceChildren();
+        text("#events-count", `${events.length} events`);
+        if (!events.length) {
+          const empty = document.createElement("div");
+          empty.className = "empty";
+          empty.textContent = "No events recorded yet.";
+          node.append(empty);
+          return;
+        }
+        for (const event of events.slice(0, 8)) {
+          const item = document.createElement("article");
+          item.className = "event";
+          const when = document.createElement("time");
+          when.textContent = formatTime(event.timestamp || event.createdAt || event.generatedAt);
+          const type = document.createElement("strong");
+          type.textContent = clean(event.eventType || event.type || event.status, "event");
+          const message = document.createElement("p");
+          message.textContent = clean(event.message || event.summary || event.notes, "No message recorded.");
+          item.append(when, type, message);
+          node.append(item);
+        }
+      }
+
+      function renderMetrics() {
+        const briefs = asArray(data.briefs);
+        const runs = asArray(data.runs);
+        const events = asArray(data.events);
+        const active = runs.filter((run) => {
+          const status = statusClass(run.status || run.phase);
+          return status === "queued" || status === "running";
+        }).length;
+        const latestRun = runs.at(-1) || {};
+        const verification = clean(latestRun.verification || latestRun.verdict || latestRun.status, "None");
+        text("#metric-briefs", String(briefs.length || (data.latestBrief ? 1 : 0)));
+        text("#metric-active-runs", String(active));
+        text("#metric-verification", verification);
+        text("#metric-events", String(events.length));
+      }
+
+      function renderWorkspace() {
+        const workspace = data.workspace || {};
+        text("#workspace-name", clean(workspace.name, "Workspace"));
+        text("#workspace-id", clean(workspace.id, "local"));
+        text("#workspace-updated", formatTime(data.updatedAt || workspace.updatedAt));
+        text("#contract-version", clean(data.schema, "not active"));
+        text("#data-source", rendererActive() ? "local .nogra/ records" : dataSource);
+      }
+
+      function renderAll() {
+        renderWorkspace();
+        renderMetrics();
+        renderLatestBrief();
+        renderRuns();
+        renderAgents();
+        renderEvidence();
+        renderEvents();
+      }
+
+      renderAll();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,91 @@
+{
+  "schema": "nogra.workspace.config.v1",
+  "releaseVersion": "v1.0.0",
+  "workspaceName": "{{workspaceName}}",
+  "workspaceId": "{{workspaceId}}",
+  "createdAt": "{{generatedAt}}",
+  "version": "{{version}}",
+  "playbookVersion": "{{version}}",
+  "installMode": "{{initMode}}",
+  "defaultTargetModel": "anthropic:sonnet",
+  "briefPolicy": {
+    "defaultDepth": "thorough",
+    "hardLimit": null,
+    "guidance": "Use as much detail as needed to make the work executable and verifiable. Do not shorten a brief just to satisfy a default word count."
+  },
+  "returnPolicy": {
+    "format": "evidence-first state brief",
+    "limit": "no hard word limit; keep the opening summary concise and include all evidence needed to verify the result"
+  },
+  "runtimePolicy": {
+    "profile": "balanced",
+    "roles": {
+      "manager": {
+        "model": "inherit",
+        "effort": "auto",
+        "context": "session",
+        "enforcement": "advisory-main-session"
+      },
+      "agent": {
+        "model": "sonnet",
+        "effort": "high",
+        "context": "default",
+        "maxTurns": null
+      },
+      "verifier": {
+        "model": "sonnet",
+        "effort": "medium",
+        "context": "default",
+        "maxTurns": null
+      }
+    },
+    "budget": {
+      "mode": "balanced",
+      "maxUsdPerRun": null,
+      "warnUsdPerRun": null
+    },
+    "guidance": "Use /nogra:settings to view or change runtime profile, role models, role effort and advisory budget. Manager describes the active Claude Code conversation and is advisory unless the user also switches /model and /effort. Agent and verifier describe desired disposable run-agent routing when the client/runtime can honor model and effort. Interactive plugin mode treats budget as advisory; hard maxUsdPerRun applies only to headless runtimes that support budget flags."
+  },
+  "routingPolicy": {
+    "autoOfferEnabled": true,
+    "sensitivityPercent": 50,
+    "sensitivityStepPercent": 5,
+    "autoOfferThreshold": 60,
+    "strongOfferThreshold": 80,
+    "offerOncePerIntent": true,
+    "topicGate": true,
+    "defaultLanguage": "en",
+    "translationFallback": "claude-current-prompt",
+    "scoring": {
+      "createIntent": 25,
+      "productSurface": 20,
+      "evidenceNeed": 20,
+      "completionClaim": 20,
+      "qualityCritical": 15,
+      "riskyDomain": 15,
+      "ambiguity": 10,
+      "lowRiskEdit": -30,
+      "singleFileLowScope": -15,
+      "directOverride": -40,
+      "pureQuestion": -50
+    },
+    "dictionary": {
+      "createIntent": ["byg", "bygge", "lav", "lave", "skab", "ret", "aendr", "ændr", "implementer", "verificer", "tjek"],
+      "productSurface": ["side", "flere filer", "fuld viewport"],
+      "evidenceNeed": ["verificer", "tjek", "bevis"],
+      "completionClaim": ["faerdig", "færdig"],
+      "qualityCritical": ["flot", "fed", "laekkert", "lækkert"],
+      "riskyDomain": [],
+      "ambiguity": ["tvetydig", "usikker", "svaer at fortryde", "svær at fortryde"],
+      "lowRiskEdit": ["en saetning", "en sætning", "én sætning"],
+      "singleFileLowScope": ["en fil", "én fil"],
+      "directOverride": ["direkte", "uden nogra", "skip nogra", "no nogra", "without nogra", "bare byg"],
+      "toggleOn": [],
+      "toggleOff": []
+    },
+    "guidance": "Adjust sensitivityPercent from 0 to 100. Values snap to sensitivityStepPercent; default step is 5. Higher sensitivity lowers effective offer thresholds and makes Claude offer Nogra more often; lower sensitivity raises thresholds and keeps Claude more direct. defaultLanguage and dictionary let the workspace add non-English routing phrases while keeping the core English-first. translationFallback=claude-current-prompt means Claude may use its current-prompt understanding; it is not an external translation call. autoOfferThreshold and strongOfferThreshold are retained as legacy/advanced values. This controls local guidance only and never authorizes MCP calls, dispatch, verification, subagents or extension execution."
+  },
+  "paths": {
+    "hiddenRoot": ".nogra"
+  }
+}

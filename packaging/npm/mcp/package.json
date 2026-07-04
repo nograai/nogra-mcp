@@ -1,0 +1,23 @@
+{
+  "name": "@nograai/mcp",
+  "version": "1.0.0",
+  "description": "Nogra MCP server — standalone binary launcher. Selects and executes the platform-specific @nograai/mcp-* binary package.",
+  "license": "SEE LICENSE IN README.md",
+  "type": "module",
+  "bin": {
+    "nogra-mcp": "bin/nogra-mcp.js"
+  },
+  "files": [
+    "bin/"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "optionalDependencies": {
+    "@nograai/mcp-darwin-arm64": "1.0.0",
+    "@nograai/mcp-darwin-x64": "1.0.0",
+    "@nograai/mcp-linux-x64": "1.0.0",
+    "@nograai/mcp-linux-arm64": "1.0.0",
+    "@nograai/mcp-win32-x64": "1.0.0"
+  }
+}

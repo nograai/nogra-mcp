@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "principle": "Roles are workflow functions. Models are user-selected adapters behind those functions.",
+  "roles": {
+    "pm": {
+      "role": "pm",
+      "title": "Project Manager",
+      "layer": "T4",
+      "adapter": "codex_cli",
+      "model": "gpt-5.4",
+      "reasoning": "medium",
+      "sandboxDefault": "workspace-write",
+      "authority": "implementation shape, scoped code changes, verification, evidence return"
+    },
+    "agent": {
+      "role": "agent",
+      "title": "Agent Exec",
+      "layer": "T5",
+      "adapter": "claude_cli",
+      "model": "sonnet",
+      "effort": "low",
+      "sandboxDefault": "workspace-write",
+      "authority": "bounded execution inside an approved brief and write boundary",
+      "supportedAdapters": [
+        "claude_cli",
+        "codex_cli",
+        "gemini_cli"
+      ]
+    }
+  }
+}

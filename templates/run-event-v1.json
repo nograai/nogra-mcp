@@ -1,0 +1,14 @@
+{
+  "schema": "nogra.event.v1",
+  "releaseVersion": "v1.0.0",
+  "eventId": "event-slug",
+  "workspaceId": "local",
+  "eventType": "note",
+  "message": "Describe what happened.",
+  "createdAt": "2026-05-04T00:00:00Z",
+  "briefId": "brief-slug",
+  "runId": "run-slug",
+  "artifactUris": [],
+  "evidenceLevel": "reported",
+  "metadata": {}
+}

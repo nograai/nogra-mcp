@@ -1,0 +1,52 @@
+{
+  "schema": "nogra.dispatch.handoff.v1",
+  "releaseVersion": "v1.0.0",
+  "generatedAt": "2026-05-04T00:00:00Z",
+  "target": "audit-job",
+  "briefId": "brief-example-dispatch-handoff",
+  "brief": {
+    "schema": "nogra.brief.v1",
+    "releaseVersion": "v1.0.0",
+    "briefId": "brief-example-dispatch-handoff",
+    "workspaceId": "local",
+    "title": "Example dispatch handoff",
+    "createdAt": "2026-05-04T00:00:00Z",
+    "status": "ready",
+    "intent": "Run a small audit job against the supplied brief.",
+    "contextHandoff": "The runtime receives this handoff as a self-contained unit.",
+    "scope": {
+      "in": [
+        "Read the embedded brief."
+      ],
+      "out": [
+        "Call back to the MCP server for brief content."
+      ],
+      "files": []
+    },
+    "successCriteria": [
+      "The packet contains the brief and target."
+    ],
+    "stopCriteria": [
+      "Required packet fields are missing."
+    ],
+    "maxOutput": {
+      "format": "concise report",
+      "limit": "enough detail to verify the result"
+    }
+  },
+  "parentRunId": "transport-20260504000000-abcdef12",
+  "intentId": "intent-demo",
+  "doctrineRefs": [
+    "docs/runtime-rules.md"
+  ],
+  "doctrine": [
+    {
+      "ref": "docs/runtime-rules.md",
+      "path": "docs/runtime-rules.md",
+      "text": "Use the embedded brief as the source of task intent."
+    }
+  ],
+  "metadata": {
+    "example": true
+  }
+}

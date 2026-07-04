@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.nogra.local/dispatch-handoff-v1.schema.json",
+  "title": "Nogra Dispatch Handoff v1",
+  "type": "object",
+  "required": [
+    "schema",
+    "releaseVersion",
+    "generatedAt",
+    "target",
+    "briefId",
+    "brief"
+  ],
+  "properties": {
+    "schema": {
+      "const": "nogra.dispatch.handoff.v1"
+    },
+    "releaseVersion": {
+      "type": "string",
+      "pattern": "^v[1-9][0-9]*\\.[0-9]+\\.[0-9]+$"
+    },
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "target": {
+      "type": "string",
+      "minLength": 1
+    },
+    "briefId": {
+      "type": "string",
+      "pattern": "^brief-[A-Za-z0-9_.-]+$"
+    },
+    "brief": {
+      "type": "object",
+      "required": [
+        "schema",
+        "releaseVersion",
+        "briefId",
+        "title",
+        "intent"
+      ],
+      "properties": {
+        "schema": {
+          "type": "string"
+        },
+        "releaseVersion": {
+          "type": "string"
+        },
+        "briefId": {
+          "type": "string",
+          "pattern": "^brief-[A-Za-z0-9_.-]+$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "intent": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": true
+    },
+    "parentRunId": {
+      "type": "string"
+    },
+    "intentId": {
+      "type": "string"
+    },
+    "doctrineRefs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "doctrine": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "ref": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "error": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "redactions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Secret-pattern category labels detected in this record at write time."
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

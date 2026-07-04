@@ -1,0 +1,23 @@
+{
+  "schema": "nogra.run.v1",
+  "releaseVersion": "v1.0.0",
+  "runId": "run-demo-contract-check",
+  "workspaceId": "local",
+  "briefId": "brief-demo-contract-check",
+  "status": "queued",
+  "createdAt": "2026-05-04T00:00:00Z",
+  "updatedAt": "2026-05-04T00:00:00Z",
+  "owner": "local-user",
+  "targetRole": "implementer",
+  "targetModel": "anthropic:sonnet",
+  "startedAt": null,
+  "endedAt": null,
+  "summary": "Demo run record for public contract validation.",
+  "artifactUris": [
+    "nogra://public/schemas/run-v1"
+  ],
+  "evidenceLevel": "reported",
+  "metadata": {
+    "example": true
+  }
+}

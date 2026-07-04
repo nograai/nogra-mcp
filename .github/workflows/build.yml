@@ -1,0 +1,71 @@
+name: Build
+
+# Reusable 5-platform build matrix: build -> structural private-module assert
+# -> in-CI handshake smoke -> deterministic artifact upload. Called directly
+# on push/PR for CI signal, and via workflow_call from publish.yml (job 1) so
+# the tag-triggered publish reuses this exact matrix instead of duplicating
+# it. See packaging/build.py, packaging/ci_smoke.py and packaging/NOTES.md
+# for what each step actually proves.
+on:
+  push:
+  pull_request:
+  workflow_call:
+
+jobs:
+  build:
+    name: build (${{ matrix.platform }}-${{ matrix.arch }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-14
+            platform: darwin
+            arch: arm64
+          # KNOWN GAP (see RELEASING.md): macos-13 is fully retired from
+          # GitHub's hosted runner image list as of this authoring (verified
+          # against actions/runner-images, 2026-07-04) — it is not merely
+          # "deprecated soon", it no longer schedules at all. macos-15-intel
+          # is the current x64 macOS label, but it is listed under GitHub's
+          # "larger runners" naming (alongside macos-15-large/macos-14-large)
+          # and its availability on the nograai org's actual plan/repo-tier
+          # is UNVERIFIED from this machine. If this job fails to schedule,
+          # see RELEASING.md's darwin-x64 fallback options.
+          - os: macos-15-intel
+            platform: darwin
+            arch: x64
+          - os: ubuntu-24.04
+            platform: linux
+            arch: x64
+          # Confirmed GA (no preview badge) against actions/runner-images as
+          # of this authoring, 2026-07-04 — see RELEASING.md for the note.
+          - os: ubuntu-24.04-arm
+            platform: linux
+            arch: arm64
+          - os: windows-2022
+            platform: win32
+            arch: x64
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: astral-sh/setup-uv@v8
+
+      # `uv run python ...` (not a bare `python`/`python3` command) so the
+      # exact same invocation resolves an interpreter identically on all 5
+      # runners regardless of whether the runner image aliases a bare
+      # `python` command on PATH by default.
+      - name: Build (packaging/build.py)
+        run: uv run python packaging/build.py
+
+      - name: CI smoke (packaging/ci_smoke.py)
+        run: uv run python packaging/ci_smoke.py
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: nogra-mcp-${{ matrix.platform }}-${{ matrix.arch }}
+          path: |
+            packaging/dist/nogra-mcp
+            packaging/dist/nogra-mcp.exe
+          if-no-files-found: error
+          retention-days: 14

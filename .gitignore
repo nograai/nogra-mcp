@@ -1,0 +1,27 @@
+.venv/
+__pycache__/
+*.pyc
+src/**/__pycache__/
+*.egg-info/
+.DS_Store
+
+# Build artifacts — never in git history (CI builds fresh; npm/PyPI carry the binaries)
+dist/
+build/
+packaging/dist/
+packaging/build/
+packaging/npm/mcp-*/nogra-mcp
+packaging/npm/mcp-*/nogra-mcp.exe
+
+# Live dev-lane workspace state — the nogra-dev MCP server writes real briefs
+# here at runtime. Internal state, never public.
+examples/workspaces/y26-private/
+
+# Internal-audience docs and dev bricks — excluded from the v1 public repo
+# scope on purpose (they describe Y26-internal machinery, not the product).
+# Re-adding any of them is a deliberate one-line decision, not an accident.
+BOUNDARY.md
+VALIDATION.md
+acceptance/
+Dockerfile
+.dockerignore

@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "defaultFamily": "default-code",
+  "families": {
+    "default-code": {
+      "tools": ["Read", "Write", "Edit", "Glob", "Grep", "Bash"],
+      "description": "Default file-oriented execution for bounded code or content changes."
+    },
+    "read-only": {
+      "tools": ["Read", "Glob", "Grep", "Bash"],
+      "replacesDefault": true,
+      "description": "Read-only inspection, scout or verification work.",
+      "deriveFrom": {
+        "toolNeeds": ["read-only", "no writes", "inspection only", "scout"],
+        "notes": ["read-only", "no writes"]
+      }
+    },
+    "web-research": {
+      "tools": ["WebSearch", "WebFetch"],
+      "description": "Source lookup and web research.",
+      "deriveFrom": {
+        "toolNeeds": ["web research", "source review", "external sources", "look up sources", "fetch sources"],
+        "notes": ["web research", "source review", "external sources"]
+      }
+    },
+    "browser-verification": {
+      "tools": ["mcp__playwright__*"],
+      "description": "Browser verification through the installed Playwright MCP server.",
+      "deriveFrom": {
+        "toolNeeds": ["browser verification", "browser check", "screenshot evidence", "rendered output", "console inspection", "network inspection", "page verification", "e2e"],
+        "notes": ["browser verification", "browser check", "screenshot", "playwright"]
+      }
+    }
+  },
+  "aliases": {
+    "code": "default-code",
+    "code-edit": "default-code",
+    "file-execution": "default-code",
+    "file-edit": "default-code",
+    "scout": "read-only",
+    "read-only-scout": "read-only",
+    "research": "web-research",
+    "sources": "web-research",
+    "browser": "browser-verification",
+    "playwright": "browser-verification",
+    "browser-verify": "browser-verification",
+    "ui-verification": "browser-verification"
+  }
+}

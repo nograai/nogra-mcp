@@ -1,0 +1,20 @@
+{
+  "schema": "nogra.dispatch.handoff.v1",
+  "releaseVersion": "v1.0.0",
+  "generatedAt": "2026-05-04T00:00:00Z",
+  "target": "runtime-target",
+  "briefId": "brief-slug",
+  "brief": {
+    "schema": "nogra.brief.v1",
+    "releaseVersion": "v1.0.0",
+    "briefId": "brief-slug",
+    "workspaceId": "local",
+    "title": "Brief title",
+    "intent": "Brief intent."
+  },
+  "parentRunId": "",
+  "intentId": "",
+  "doctrineRefs": [],
+  "doctrine": [],
+  "metadata": {}
+}
