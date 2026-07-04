@@ -48,7 +48,9 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - uses: astral-sh/setup-uv@v8
+      # Exact tag — astral-sh publishes vX.Y.Z (and vX.Y) tags but no floating
+      # vX major alias, so `@v8` does not resolve.
+      - uses: astral-sh/setup-uv@v8.2.0
 
       # `uv run python ...` (not a bare `python`/`python3` command) so the
       # exact same invocation resolves an interpreter identically on all 5
