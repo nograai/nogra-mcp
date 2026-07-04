@@ -447,3 +447,43 @@ to whatever `nogra-mcp` wrapper is on PATH (here: a dev plugin wrapper serving
 38 tools). Pin the source with `PYTHONPATH=src` + the explicit entry point.
 Cross-platform verify is CI Build #3 after push; nothing was committed,
 pushed, tagged, or published from this run.
+
+**Round 2 — fix the class, not the instance.** CI Build #3 proved the
+transport_runtime fix worked and then crashed one module further down the
+same import chain: `register_extensions` -> `runtime.register` ->
+`load_runtime_module` -> `import runtime_server` -> runtime_server.py line 35,
+the identical module-level `parents[4]` walk. The lesson: after fixing one
+instance of a path-depth assumption, grep the whole tree for the pattern
+(`grep -rn "parents\[" src/nogra_mcp/*.py`) and fix the CLASS in one round.
+The exhaustive map (verified by grep + a per-module RED harness that execs
+each module's source with a simulated shallow `/tmp/_MEIxxxxxx/nogra_mcp/`
+`__file__` and symlink-free `resolve()`):
+
+- `runtime_server.py:35` module-level `parents[4]` — the Build #3 crash;
+  pre-fix source raises `IndexError: 4` at line 35 in the harness. Fixed with
+  the same per-file `_resolve_default_root()` pattern as transport_runtime.
+- `adapter_runner.py:14` module-level `parents[4]` — identical
+  crash-in-waiting (raises `IndexError: 4` at line 14 in the harness; it was
+  simply never imported before runtime_server died). Same per-file fix.
+- `runtime.py:17` `package_root()` (`parents[2]`, function-level) — SAFE at
+  `/tmp/_MEI` depth (returns `/tmp` in the harness) but bounded anyway;
+  `runtime.py:24` `repo_root()` (`package_root().parents[1]`) — function-level
+  so it survives import, but raises `IndexError: 1` when CALLED in frozen
+  mode without `NOGRA_MCP_ROOT`/`NOGRA_ROOT` env (`/tmp` has only one
+  ancestor). Both now route through a small `_bounded_parent(path, index)`
+  guard (same fallback-to-shallowest semantics; module-local, no shared-helper
+  refactor across files).
+- `server.py:316` `parents[2]` — verified SAFE (4 ancestors available at
+  `/tmp/_MEIxxxxxx/nogra_mcp/server.py`, index 2 valid) and additionally
+  shielded by entry_point.py's `NOGRA_MCP_ROOT=sys._MEIPASS` bridge.
+  NOT changed.
+- `y26_private.py:14/21` — same pattern but the module is excluded from the
+  binary (Phase B `excludes`), host-only. NOT changed.
+
+Host-equivalence after round 2 (this machine, env overrides cleared):
+runtime_server `DEFAULT_ROOT`/`ROOT`, adapter_runner `DEFAULT_ROOT`/`ROOT`,
+`runtime.package_root()` and `runtime.repo_root()` all byte-identical to
+their pre-fix computed values. Rebuild: assert PASS (1375 modules, 0 private);
+`TMPDIR=/tmp` and default-TMPDIR ci_smoke both `32/32 PASS`. Real
+cross-platform confirmation remains CI Build #4 (Linux legs execute the
+previously-crashing chain live).

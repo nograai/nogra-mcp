@@ -10,18 +10,29 @@ from pathlib import PurePosixPath
 from typing import Any
 
 
+def _bounded_parent(path: Path, index: int) -> Path:
+    # Depth-checked ancestor walk: a frozen PyInstaller onefile binary
+    # self-extracts to a shallow throwaway dir (e.g. Linux /tmp/_MEIxxxx),
+    # where fixed parents[N] indices assumed by the dev/private checkout
+    # layout can be out of range. Fall back to the shallowest available
+    # ancestor instead of raising; on a real deep checkout the requested
+    # index always exists, so host/dev behavior is unchanged.
+    parents = path.parents
+    return parents[index] if index < len(parents) else parents[-1]
+
+
 def package_root() -> Path:
     configured = os.environ.get("NOGRA_MCP_ROOT", "").strip()
     if configured:
         return Path(configured).resolve()
-    return Path(__file__).resolve().parents[2]
+    return _bounded_parent(Path(__file__).resolve(), 2)
 
 
 def repo_root() -> Path:
     configured = os.environ.get("NOGRA_ROOT") or os.environ.get("Y26_ROOT")
     if configured:
         return Path(configured).resolve()
-    return package_root().parents[1]
+    return _bounded_parent(package_root(), 1)
 
 
 def load_runtime_module() -> Any:
