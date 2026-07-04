@@ -16,7 +16,22 @@ from pathlib import Path
 from typing import Any
 
 
-DEFAULT_ROOT = Path(__file__).resolve().parents[4]
+def _resolve_default_root() -> Path:
+    # Assumes a dev/private checkout depth (src/nogra_mcp/transport_runtime.py
+    # -> parents[4] is the workspace root). A frozen PyInstaller onefile binary
+    # self-extracts to a shallow throwaway dir per run (e.g. Linux /tmp/_MEIxxxx
+    # has only 4 ancestors, indices 0-3) where this walk is out of range --
+    # and there is no real host control-plane to find there anyway, since this
+    # module is host-only machinery (see BOUNDARY.md). Fall back to the
+    # shallowest available ancestor instead of raising: on a real deep
+    # checkout this branch never triggers (index 4 is always present), so
+    # host/dev behavior is unchanged.
+    parents = Path(__file__).resolve().parents
+    index = 4
+    return parents[index] if index < len(parents) else parents[-1]
+
+
+DEFAULT_ROOT = _resolve_default_root()
 ROOT = Path(os.environ.get("NOGRA_ROOT") or os.environ.get("Y26_ROOT") or str(DEFAULT_ROOT)).resolve()
 TRANSPORT_DIR = ROOT / "manager" / "state" / "transport"
 RUNS_STATE_DIR = TRANSPORT_DIR / "runs"

@@ -379,3 +379,71 @@ version; bump to a patch tag instead).
 Nothing was pushed, tagged, or published in Phase C1 — the repo does not
 exist yet. `packaging/build/` intermediates were removed after the final
 local proof run; `packaging/dist/nogra-mcp` (the hardened binary) was kept.
+
+## 1.0.1 frozen-path fix (2026-07-04): defensive ROOT resolution in transport_runtime
+
+**Root cause.** CI Build #2 failed on BOTH Linux legs (linux-x64, linux-arm64)
+with an identical traceback: `entry_point` -> `server.main` -> `run_stdio` ->
+`build_mcp` -> `register_extensions` (server.py) -> `import
+nogra_mcp.transport_runtime` -> module line 19 -> `IndexError: 4`. The
+module-level default-ROOT computation was
+`Path(__file__).resolve().parents[4]` — a walk that assumes the dev/private
+checkout depth. A PyInstaller onefile binary on Linux self-extracts to
+`/tmp/_MEIxxxxxx/`, so the module file is
+`/tmp/_MEIxxxxxx/nogra_mcp/transport_runtime.py` with only **4** ancestors
+(indices 0–3); `parents[4]` is out of range and the import — and therefore
+the whole server — dies at startup.
+
+**The macOS/Windows-passed-incidentally lesson.** The same binary passed CI
+on macOS and Windows for depth reasons only: macOS runners extract under
+`/var/folders/...` (deep, and even a literal `TMPDIR=/tmp` gains a level via
+the `/tmp -> /private/tmp` symlink under `.resolve()`), Windows under a deep
+`AppData\Local\Temp` path. PyPI/uvx (unfrozen, deep `site-packages`) is
+unaffected. A green leg is only evidence for that leg's filesystem shape —
+path-depth assumptions must be tested at the shallowest real extraction
+point, which is Linux `/tmp/_MEIxxxxxx`.
+
+**Repro recipe.** On Linux CI: any spawn of the frozen binary
+(`packaging/ci_smoke.py`) hits it. On macOS the shallow layout is NOT
+reproducible via `TMPDIR=/tmp` (verified empirically: the `/private/tmp`
+symlink resolution adds the missing ancestor, and this build's spec sets
+`runtime_tmpdir=None` — macOS extraction stayed under `/var/folders/...`).
+Unit-level RED proof instead: exec the module source with a simulated
+`__file__` of `/tmp/_MEIxxxxxx/nogra_mcp/transport_runtime.py` and `resolve()`
+prevented from adding symlink levels -> `IndexError: 4` at line 19, verbatim
+match with the CI traceback.
+
+**The fix (transport_runtime.py only, no server.py change needed).** The
+`parents[4]` walk moved into `_resolve_default_root()`, which checks depth
+before indexing and falls back to the shallowest available ancestor
+(`parents[-1]`) when index 4 does not exist. `transport_runtime` is host-only
+control-plane machinery (BOUNDARY.md): in a frozen public binary there is no
+control-plane at any path, so a harmless fallback ROOT is architecturally
+correct — every consumer (`TRANSPORT_DIR` etc.) already tolerates a
+nonexistent directory tree, and public mode simply serves its 32 tools as it
+always did when the control-plane is absent. On a real deep checkout index 4
+always exists, so the fallback branch never triggers and host/dev ROOT is
+byte-for-byte unchanged (proven: pre-fix `parents[4]` value == post-fix
+imported `ROOT` on this machine). `NOGRA_ROOT`/`Y26_ROOT` env overrides win
+over the default exactly as before. `register_extensions`' import site in
+server.py was read and needed no guard: the failure was module-level, not
+call-level.
+
+**Version lockstep 1.0.1.** `pyproject.toml` + `packaging/npm/mcp/package.json`
+(version + all five optionalDependencies pins) + all five platform
+package.jsons: 12 occurrences of `1.0.1`, zero remaining `1.0.0`.
+
+**Green proofs (this machine, macOS-arm64, rebuilt binary).**
+`python3 packaging/build.py` -> `PRIVATE-MODULE ASSERT: PASS (1375 modules
+scanned, 0 y26_private modules, 0 private tool-name strings)`. Then:
+(a) `TMPDIR=/tmp python3 packaging/ci_smoke.py` -> `CI SMOKE: PASS (32/32
+tools, 0 forbidden y26_*/codex_* names)`; (b) default-TMPDIR run -> same PASS;
+(c) unfrozen baseline (uv project env, this checkout's `src/` on `PYTHONPATH`,
+`packaging/entry_point.py`) through the same ci_smoke handshake -> same PASS.
+One trap worth recording: `uv run --project . nogra-mcp` is NOT a valid
+unfrozen baseline on a dev machine — this project has no `[build-system]`, so
+uv treats it as virtual (never installs the console script) and falls through
+to whatever `nogra-mcp` wrapper is on PATH (here: a dev plugin wrapper serving
+38 tools). Pin the source with `PYTHONPATH=src` + the explicit entry point.
+Cross-platform verify is CI Build #3 after push; nothing was committed,
+pushed, tagged, or published from this run.
