@@ -1,0 +1,34 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.nograai/nogra-mcp",
+  "title": "Nogra",
+  "description": "Brief, GO, dispatch, evidence, verify for AI-assisted work. 32 public tools (briefs, dispatch transport, run events, contract registry, redaction) served over MCP stdio against the workspace's local .nogra/ records. Zero model inference, no network calls of its own, no credentials.",
+  "websiteUrl": "https://nogra.ai",
+  "repository": {
+    "url": "https://github.com/nograai/nogra-mcp",
+    "source": "github"
+  },
+  "version": "1.0.3",
+  "packages": [
+    {
+      "registryType": "npm",
+      "registryBaseUrl": "https://registry.npmjs.org",
+      "identifier": "@nograai/mcp",
+      "version": "1.0.3",
+      "runtimeHint": "npx",
+      "transport": {
+        "type": "stdio"
+      }
+    },
+    {
+      "registryType": "pypi",
+      "registryBaseUrl": "https://pypi.org",
+      "identifier": "nogra-mcp",
+      "version": "1.0.3",
+      "runtimeHint": "uvx",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}

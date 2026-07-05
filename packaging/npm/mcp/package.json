@@ -1,5 +1,6 @@
 {
   "name": "@nograai/mcp",
+  "mcpName": "io.github.nograai/nogra-mcp",
   "version": "1.0.2",
   "description": "Nogra MCP server — standalone binary launcher. Selects and executes the platform-specific @nograai/mcp-* binary package.",
   "license": "SEE LICENSE IN README.md",
