@@ -12,4 +12,4 @@ V1 public MCP validation does not call providers. The customer-owned Claude Code
 
 - target is the workflow role, for example agent.
 - targetModel is the wildcard provider:model label, for example anthropic:sonnet.
-- OpenAI, Gemini and local adapters are future-provider slots, not V1 hosted defaults.
+- Additional provider and local adapters are future-provider slots, not V1 hosted defaults.

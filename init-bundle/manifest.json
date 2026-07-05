@@ -135,6 +135,20 @@
       "modes": ["standalone", "plugin"]
     },
     {
+      "source": "init-bundle/files/.gitkeep",
+      "path": "inbox/.gitkeep",
+      "mimeType": "text/plain",
+      "writePolicy": "create_if_missing",
+      "purpose": "Creates the default empty inbox lane for incoming files, screenshots and receipts."
+    },
+    {
+      "source": "init-bundle/files/.gitkeep",
+      "path": "projects/.gitkeep",
+      "mimeType": "text/plain",
+      "writePolicy": "create_if_missing",
+      "purpose": "Creates the default empty projects lane for hub sub-projects."
+    },
+    {
       "source": "init-bundle/files/.claude/commands/nogra.md",
       "path": ".claude/commands/nogra.md",
       "mimeType": "text/markdown",
