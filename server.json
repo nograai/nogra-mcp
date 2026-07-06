@@ -19,16 +19,6 @@
       "transport": {
         "type": "stdio"
       }
-    },
-    {
-      "registryType": "pypi",
-      "registryBaseUrl": "https://pypi.org",
-      "identifier": "nogra-mcp",
-      "version": "1.0.3",
-      "runtimeHint": "uvx",
-      "transport": {
-        "type": "stdio"
-      }
     }
   ]
 }
