@@ -1,7 +1,7 @@
 {
   "name": "@nograai/mcp-darwin-arm64",
-  "version": "1.0.2",
-  "description": "Nogra MCP server — native binary for macOS arm64 (Apple Silicon). Installed automatically as an optionalDependency of @nograai/mcp.",
+  "version": "1.0.3",
+  "description": "Nogra MCP server \u2014 native binary for macOS arm64 (Apple Silicon). Installed automatically as an optionalDependency of @nograai/mcp.",
   "license": "SEE LICENSE IN README.md",
   "os": [
     "darwin"

@@ -1,8 +1,8 @@
 {
   "name": "@nograai/mcp",
   "mcpName": "io.github.nograai/nogra-mcp",
-  "version": "1.0.2",
-  "description": "Nogra MCP server — standalone binary launcher. Selects and executes the platform-specific @nograai/mcp-* binary package.",
+  "version": "1.0.3",
+  "description": "Nogra MCP server \u2014 standalone binary launcher. Selects and executes the platform-specific @nograai/mcp-* binary package.",
   "license": "SEE LICENSE IN README.md",
   "type": "module",
   "bin": {
@@ -15,10 +15,10 @@
     "node": ">=18"
   },
   "optionalDependencies": {
-    "@nograai/mcp-darwin-arm64": "1.0.2",
-    "@nograai/mcp-darwin-x64": "1.0.2",
-    "@nograai/mcp-linux-x64": "1.0.2",
-    "@nograai/mcp-linux-arm64": "1.0.2",
-    "@nograai/mcp-win32-x64": "1.0.2"
+    "@nograai/mcp-darwin-arm64": "1.0.3",
+    "@nograai/mcp-darwin-x64": "1.0.3",
+    "@nograai/mcp-linux-x64": "1.0.3",
+    "@nograai/mcp-linux-arm64": "1.0.3",
+    "@nograai/mcp-win32-x64": "1.0.3"
   }
 }
